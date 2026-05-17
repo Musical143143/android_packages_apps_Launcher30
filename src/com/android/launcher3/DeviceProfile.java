@@ -852,6 +852,7 @@ public class DeviceProfile {
                     context.getResources(),
                     inv,
                     mMetrics,
+                    mDeviceProperties,
                     mIsScalableGrid,
                     mTypeIndex,
                     scale,
