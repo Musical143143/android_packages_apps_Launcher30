@@ -214,6 +214,7 @@ import com.android.launcher3.pm.PinRequestHelper;
 import com.android.launcher3.popup.ArrowPopup;
 import com.android.launcher3.popup.PopupController;
 import com.android.launcher3.popup.SystemShortcut;
+import com.android.launcher3.smartspacer.LauncherSmartspacerContainer;
 import com.android.launcher3.statemanager.StateManager;
 import com.android.launcher3.statemanager.StateManager.StateHandler;
 import com.android.launcher3.statemanager.StatefulActivity;
@@ -426,6 +427,7 @@ public class Launcher extends StatefulActivity<LauncherState>
 
     private final SettingsCache.OnChangeListener mNaturalScrollingChangedListener =
             enabled -> mIsNaturalScrollingEnabled = enabled;
+    private final LauncherPrefChangeListener mSmartspacerChangedListener = key -> recreate();
 
     private StartupLatencyLogger mStartupLatencyLogger;
 
@@ -457,6 +459,8 @@ public class Launcher extends StatefulActivity<LauncherState>
         initDeviceProfile(idp);
         idp.addOnChangeListener(this);
         mSharedPrefs = LauncherPrefs.getPrefs(this);
+        LauncherPrefs.get(this).addListener(
+                mSmartspacerChangedListener, LauncherPrefs.SMARTSPACER_ENABLED);
         mAccessibilityDelegate = createAccessibilityDelegate();
 
         initDragController();
@@ -836,6 +840,17 @@ public class Launcher extends StatefulActivity<LauncherState>
                         this.getString(R.string.set_default_home_app,
                                 this.getString(R.string.derived_app_name)),
                         Toast.LENGTH_LONG).show();
+            }
+            return;
+        }
+
+        if (requestCode == LauncherConstants.ActivityCodes.REQUEST_BIND_SMARTSPACER_WIDGET
+                || requestCode
+                == LauncherConstants.ActivityCodes.REQUEST_CONFIGURE_SMARTSPACER_WIDGET) {
+            View smartspacerContainer = findViewById(R.id.search_container_workspace);
+            if (smartspacerContainer instanceof LauncherSmartspacerContainer) {
+                ((LauncherSmartspacerContainer) smartspacerContainer)
+                        .onSmartspacerActivityResult(requestCode, resultCode, data);
             }
             return;
         }
@@ -1743,6 +1758,8 @@ public class Launcher extends StatefulActivity<LauncherState>
 
         mModel.removeCallbacks(this);
         mRotationHelper.destroy();
+        LauncherPrefs.get(this).removeListener(
+                mSmartspacerChangedListener, LauncherPrefs.SMARTSPACER_ENABLED);
 
         mAppWidgetHolder.stopListening();
         mAppWidgetHolder.destroy();

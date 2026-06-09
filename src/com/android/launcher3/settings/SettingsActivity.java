@@ -78,6 +78,7 @@ public class SettingsActivity extends FragmentActivity
     static final String DEVELOPER_OPTIONS_KEY = "pref_developer_options";
 
     public static final String FIXED_LANDSCAPE_MODE = "pref_fixed_landscape_mode";
+    public static final String SMARTSPACER_PREFERENCE_KEY = "pref_enable_smartspacer";
 
     private static final String NOTIFICATION_DOTS_PREFERENCE_KEY = "pref_icon_badging";
 
